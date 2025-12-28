@@ -80,7 +80,7 @@
             
             getBestFish: (types) => {
                 let best = { w: 0, equipe: '---', poste: '--', type: '' };
-                state.fishermen.forEach(f => {
+                state.fishermen.filter(f => f.poste).forEach(f => {
                     (f.weights || []).forEach(w => {
                         if(types.includes(w.type) && w.weight > best.w) {
                             best = { w: w.weight, equipe: `${f.nom1} ${f.prenom1} / ${f.nom2} ${f.prenom2}`, poste: f.poste, type: w.type };
@@ -95,7 +95,7 @@
                 let bestAmour = { w: 0, equipe: '---', poste: '--', type: 'Amour Blanc' };
                 let koiFound = false;
 
-                state.fishermen.forEach(f => {
+                state.fishermen.filter(f => f.poste).forEach(f => {
                     (f.weights || []).forEach(w => {
                         if(w.type === 'Koï' && w.weight > bestKoi.w) {
                             bestKoi = { w: w.weight, equipe: `${f.nom1} ${f.prenom1} / ${f.nom2} ${f.prenom2}`, poste: f.poste, type: 'Koï' };
@@ -112,9 +112,8 @@
             getSmallestFish: () => {
                 let small = { w: 999, equipe: '---', poste: '--' };
                 let found = false;
-                state.fishermen.forEach(f => {
+                state.fishermen.filter(f => f.poste).forEach(f => {
                     (f.weights || []).forEach(w => {
-                        // CONDITION : HORS KOÏ ET MOINS DE 10KG
                         if(w.type !== 'Koï' && w.weight < 10 && w.weight < small.w) {
                             small = { w: w.weight, equipe: `${f.nom1} ${f.prenom1} / ${f.nom2} ${f.prenom2}`, poste: f.poste };
                             found = true;
@@ -335,11 +334,14 @@
         };
 
         function renderInscription(container) {
+            const waiting = state.fishermen.filter(f => !f.poste);
+            const assigned = state.fishermen.filter(f => f.poste).sort((a,b) => a.poste - b.poste);
+
             container.innerHTML = `
                 <button onclick="nav('index')" class="mb-8 flex items-center text-blue-600 font-bold underline italic"><i data-lucide="arrow-left" class="mr-2"></i> Retour Accueil</button>
+                
                 <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border mb-10 max-w-4xl mx-auto">
-                    <h2 class="text-2xl font-black text-blue-900 uppercase mb-6 italic">Enregistrement Binôme</h2>
-                    
+                    <h2 class="text-2xl font-black text-blue-900 uppercase mb-6 italic text-center">Inscrire un Binôme</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                         <div class="space-y-4 p-6 bg-slate-50 rounded-3xl border border-slate-100">
                             <h3 class="font-black text-blue-600 uppercase text-xs tracking-widest italic">Pêcheur n°1</h3>
@@ -352,30 +354,39 @@
                             <input id="in_prenom2" placeholder="PRÉNOM" class="w-full p-4 border-2 border-white rounded-2xl font-bold shadow-sm outline-none focus:border-blue-600">
                         </div>
                     </div>
-
-                    <div class="max-w-xs mx-auto mb-8">
-                        <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Numéro du poste</label>
-                        <select id="in_poste" class="w-full p-4 border-2 border-slate-100 rounded-2xl font-bold bg-white uppercase outline-none focus:border-blue-600 shadow-sm mt-1">
-                            <option value="">-- CHOISIR --</option>
-                            ${Array.from({length: 10}, (_, i) => i + 1)
-                                .filter(n => !state.fishermen.find(f => f.poste == n))
-                                .map(n => `<option value="${n}">Poste ${n}</option>`).join('')}
-                        </select>
-                    </div>
-
-                    <button onclick="addF()" class="w-full bg-blue-900 text-white font-black py-5 rounded-2xl shadow-xl uppercase italic tracking-widest hover:bg-blue-800 transition-colors">Valider l'équipe</button>
+                    <button onclick="addF()" class="w-full bg-blue-900 text-white font-black py-5 rounded-2xl shadow-xl uppercase italic tracking-widest hover:bg-blue-800 transition-colors">Ajouter à la liste d'attente</button>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto italic font-bold">
-                    ${state.fishermen.filter(f => f.poste).sort((a,b) => a.poste-b.poste).map(f => `
-                        <div class="bg-white p-4 rounded-2xl border flex justify-between items-center shadow-sm">
-                            <div class="flex flex-col">
-                                <span class="text-blue-600 text-xs uppercase">Poste ${f.poste}</span>
-                                <span class="text-sm uppercase text-blue-900">${f.nom1} / ${f.nom2}</span>
-                            </div>
-                            <button onclick="delF(${f.poste})" class="text-red-200 hover:text-red-600"><i data-lucide="trash-2"></i></button>
+                <div class="max-w-4xl mx-auto space-y-12">
+                    <div>
+                        <h3 class="text-xl font-black text-orange-500 uppercase italic mb-4 flex items-center"><i data-lucide="clock" class="mr-2"></i> En attente de tirage (${waiting.length})</h3>
+                        <div class="grid grid-cols-1 gap-4">
+                            ${waiting.length ? waiting.map((f, i) => `
+                                <div class="bg-white p-6 rounded-3xl border flex justify-between items-center shadow-sm">
+                                    <div class="font-black text-blue-900 uppercase italic">${f.nom1} / ${f.nom2}</div>
+                                    <div class="flex gap-2">
+                                        <button onclick="assignPoste(${state.fishermen.indexOf(f)})" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-black uppercase text-xs italic shadow-md">Assigner Poste</button>
+                                        <button onclick="delF(${state.fishermen.indexOf(f)})" class="p-3 text-red-200 hover:text-red-600"><i data-lucide="trash-2"></i></button>
+                                    </div>
+                                </div>
+                            `).join('') : '<p class="text-slate-400 italic font-bold">Aucune équipe en attente</p>'}
                         </div>
-                    `).join('')}
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-black text-emerald-600 uppercase italic mb-4 flex items-center"><i data-lucide="check-circle" class="mr-2"></i> Postes Assignés (${assigned.length})</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${assigned.map(f => `
+                                <div class="bg-white p-4 rounded-2xl border flex justify-between items-center shadow-sm">
+                                    <div class="flex items-center">
+                                        <span class="bg-blue-900 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black mr-4">${f.poste}</span>
+                                        <span class="text-sm uppercase text-blue-900 font-black italic">${f.nom1} / ${f.nom2}</span>
+                                    </div>
+                                    <button onclick="delF(${state.fishermen.indexOf(f)})" class="text-red-100 hover:text-red-500"><i data-lucide="trash-2"></i></button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
                 </div>`;
         }
 
@@ -384,13 +395,21 @@
             const p1 = document.getElementById('in_prenom1').value;
             const n2 = document.getElementById('in_nom2').value.toUpperCase();
             const p2 = document.getElementById('in_prenom2').value;
-            const poste = document.getElementById('in_poste').value;
-            if(!n1 || !n2 || !poste) return alert("Veuillez remplir les noms et le poste.");
-            state.fishermen.push({ nom1: n1, prenom1: p1, nom2: n2, prenom2: p2, poste: parseInt(poste), weights: [] });
+            if(!n1 || !n2) return alert("Veuillez remplir les noms.");
+            state.fishermen.push({ nom1: n1, prenom1: p1, nom2: n2, prenom2: p2, poste: null, weights: [] });
             save();
         };
 
-        window.delF = (p) => { if(confirm("Supprimer cette équipe ?")) { state.fishermen = state.fishermen.filter(f => f.poste != p); save(); } };
+        window.assignPoste = (idx) => {
+            const p = prompt("Numéro du poste à assigner :");
+            if(!p) return;
+            const posteNum = parseInt(p);
+            if(state.fishermen.find(f => f.poste == posteNum)) return alert("Ce poste est déjà occupé !");
+            state.fishermen[idx].poste = posteNum;
+            save();
+        };
+
+        window.delF = (idx) => { if(confirm("Supprimer cette équipe ?")) { state.fishermen.splice(idx, 1); save(); } };
 
         function renderSettings(container) {
             container.innerHTML = `
