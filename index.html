@@ -57,11 +57,10 @@
         };
 
         window.login = () => {
-            const id = document.getElementById('l_id').value;
             const mdp = document.getElementById('l_mdp').value;
-            if(id === "aappma" && mdp === "123") {
+            if(mdp === "123") {
                 state.isLoggedIn = true; sessionStorage.setItem('auth_peche', 'true'); render();
-            } else { alert("Erreur identifiants"); }
+            } else { alert("Mot de passe incorrect"); }
         };
 
         window.logout = () => {
@@ -112,15 +111,17 @@
 
             getSmallestFish: () => {
                 let small = { w: 999, equipe: '---', poste: '--' };
+                let found = false;
                 state.fishermen.forEach(f => {
                     (f.weights || []).forEach(w => {
-                        // EXCLUSION DES KOÏS ICI
-                        if(w.type !== 'Koï' && w.weight < small.w) {
+                        // CONDITION : HORS KOÏ ET MOINS DE 10KG
+                        if(w.type !== 'Koï' && w.weight < 10 && w.weight < small.w) {
                             small = { w: w.weight, equipe: `${f.nom1} ${f.prenom1} / ${f.nom2} ${f.prenom2}`, poste: f.poste };
+                            found = true;
                         }
                     });
                 });
-                return small.w === 999 ? {w:0, equipe:'---', poste:'--'} : small;
+                return found ? small : {w:0, equipe:'---', poste:'--'};
             }
         };
 
@@ -131,7 +132,14 @@
             if(!state.isLoggedIn) {
                 root.innerHTML = `<div class="min-h-[60vh] flex items-center justify-center"><div class="bg-white p-10 rounded-[2.5rem] shadow-xl w-full max-sm mx-4 border text-center">
                 <h2 class="text-2xl font-black mb-6 text-blue-900 uppercase italic">Connexion Enduro</h2>
-                <input id="l_id" placeholder="IDENTIFIANT" class="w-full p-4 border rounded-2xl mb-4 font-bold bg-slate-50 uppercase outline-none"><input id="l_mdp" type="password" placeholder="MOT DE PASSE" class="w-full p-4 border rounded-2xl mb-6 font-bold bg-slate-50 outline-none">
+                <div class="mb-4 text-left">
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Identifiant</label>
+                    <input value="aappma" disabled class="w-full p-4 border rounded-2xl font-bold bg-slate-100 uppercase outline-none text-slate-400">
+                </div>
+                <div class="mb-6 text-left">
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Mot de passe</label>
+                    <input id="l_mdp" type="password" placeholder="Saisir le code" class="w-full p-4 border rounded-2xl font-bold bg-slate-50 outline-none focus:border-blue-600">
+                </div>
                 <button onclick="login()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase italic">Entrer</button></div></div>`;
                 return;
             }
@@ -200,8 +208,8 @@
                         <p class="text-[10px] font-bold uppercase truncate">${prestige.equipe} (P${prestige.poste})</p>
                     </div>
                     <div class="bg-orange-500 p-6 rounded-[2rem] text-white shadow-xl border-b-4 border-orange-300">
-                        <p class="text-[10px] font-black uppercase mb-1 opacity-60 italic">Plus petit poisson (Hors Koï)</p>
-                        <p class="text-3xl font-black mb-2">${smallFish.w.toFixed(3)} kg</p>
+                        <p class="text-[10px] font-black uppercase mb-1 opacity-60 italic">Petit poisson (Max 10kg/Hors Koï)</p>
+                        <p class="text-3xl font-black mb-2">${smallFish.w > 0 ? smallFish.w.toFixed(3) : '---'} ${smallFish.w > 0 ? 'kg' : ''}</p>
                         <p class="text-[10px] font-bold uppercase truncate">${smallFish.equipe} (P${smallFish.poste})</p>
                     </div>
                 </div>
