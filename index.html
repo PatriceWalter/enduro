@@ -12,11 +12,21 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
         .modal-bg { background-color: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); }
+        
+        /* Responsive table */
+        @media (max-width: 768px) {
+            .table-responsive { display: none; }
+            .cards-responsive { display: block; }
+        }
+        @media (min-width: 769px) {
+            .table-responsive { display: block; }
+            .cards-responsive { display: none; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="app" class="max-w-6xl mx-auto p-4 md:p-8"></div>
+    <div id="app" class="max-w-6xl mx-auto p-3 md:p-8"></div>
     <div id="modal-container"></div>
 
     <script>
@@ -131,36 +141,46 @@
         function render() {
             const root = document.getElementById('app');
             if(!state.isLoggedIn) {
-                root.innerHTML = `<div class="min-h-[60vh] flex items-center justify-center"><div class="bg-white p-10 rounded-[2.5rem] shadow-xl w-full max-sm mx-4 border text-center">
-                <h2 class="text-2xl font-black mb-6 text-blue-900 uppercase italic">Connexion Enduro</h2>
-                <div class="mb-4 text-left">
-                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Identifiant</label>
-                    <input value="aappma" disabled class="w-full p-4 border rounded-2xl font-bold bg-slate-100 uppercase outline-none text-slate-400">
-                </div>
-                <div class="mb-6 text-left">
-                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Mot de passe</label>
-                    <input id="l_mdp" type="password" placeholder="Saisir le code" class="w-full p-4 border rounded-2xl font-bold bg-slate-50 outline-none focus:border-blue-600">
-                </div>
-                <button onclick="login()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase italic">Entrer</button></div></div>`;
+                root.innerHTML = `
+                <div class="min-h-[60vh] flex items-center justify-center px-4">
+                    <div class="bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-xl w-full max-w-sm border text-center">
+                        <h2 class="text-xl md:text-2xl font-black mb-6 text-blue-900 uppercase italic">Connexion Enduro</h2>
+                        <div class="mb-4 text-left">
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Identifiant</label>
+                            <input value="aappma" disabled class="w-full p-3 md:p-4 border rounded-xl md:rounded-2xl font-bold bg-slate-100 uppercase outline-none text-slate-400 text-sm">
+                        </div>
+                        <div class="mb-6 text-left">
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Mot de passe</label>
+                            <input id="l_mdp" type="password" placeholder="Saisir le code" class="w-full p-3 md:p-4 border rounded-xl md:rounded-2xl font-bold bg-slate-50 outline-none focus:border-blue-600 text-sm">
+                        </div>
+                        <button onclick="login()" class="w-full bg-blue-600 text-white font-black py-3 md:py-4 rounded-xl md:rounded-2xl shadow-lg uppercase italic text-sm">Entrer</button>
+                    </div>
+                </div>`;
                 return;
             }
 
             if(state.currentPage === 'index') {
                 root.innerHTML = `
-                    <div class="flex justify-between items-center mb-8">
-                        <button onclick="checkAdmin()" class="p-3 bg-white border rounded-full text-blue-600 shadow-sm hover:bg-blue-50 transition-colors"><i data-lucide="settings"></i></button>
-                        <button onclick="logout()" class="p-3 bg-red-50 border border-red-100 rounded-full text-red-600 shadow-sm hover:bg-red-100 transition-colors"><i data-lucide="log-out"></i></button>
+                    <div class="flex justify-between items-center mb-6 md:mb-8">
+                        <button onclick="checkAdmin()" class="p-2 md:p-3 bg-white border rounded-full text-blue-600 shadow-sm hover:bg-blue-50 transition-colors"><i data-lucide="settings" class="w-5 h-5 md:w-6 md:h-6"></i></button>
+                        <button onclick="logout()" class="p-2 md:p-3 bg-red-50 border border-red-100 rounded-full text-red-600 shadow-sm hover:bg-red-100 transition-colors"><i data-lucide="log-out" class="w-5 h-5 md:w-6 md:h-6"></i></button>
                     </div>
-                    <div class="text-center mb-12">
-                        <h1 class="text-6xl font-black text-blue-900 uppercase italic tracking-tighter">${state.contestInfo.title}</h1>
-                        <div class="inline-block px-8 py-3 bg-blue-600 text-white rounded-full font-bold uppercase text-xs mt-3 shadow-lg">${state.contestInfo.date}</div>
+                    <div class="text-center mb-8 md:mb-12">
+                        <h1 class="text-4xl md:text-6xl font-black text-blue-900 uppercase italic tracking-tighter">${state.contestInfo.title}</h1>
+                        <div class="inline-block px-5 md:px-8 py-2 md:py-3 bg-blue-600 text-white rounded-full font-bold uppercase text-[10px] md:text-xs mt-3 shadow-lg">${state.contestInfo.date}</div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-3xl mx-auto">
-                        <button onclick="nav('inscription')" class="p-8 bg-orange-500 text-white rounded-[2.5rem] shadow-xl font-black text-3xl flex items-center justify-between hover:scale-95 transition-transform italic">Inscriptions <i data-lucide="users"></i></button>
-                        <button onclick="nav('resultats')" class="p-8 bg-emerald-600 text-white rounded-[2.5rem] shadow-xl font-black text-3xl flex items-center justify-between hover:scale-95 transition-transform italic">Classement <i data-lucide="trophy"></i></button>
+                    <div class="grid grid-cols-2 gap-3 md:gap-6 mb-8 md:mb-12 max-w-3xl mx-auto">
+                        <button onclick="nav('inscription')" class="p-4 md:p-8 bg-orange-500 text-white rounded-2xl md:rounded-[2.5rem] shadow-xl font-black text-lg md:text-3xl flex items-center justify-between hover:scale-95 transition-transform italic">
+                            <span class="text-left leading-tight">Inscrip<span class="hidden md:inline">tions</span></span>
+                            <i data-lucide="users" class="w-6 h-6 md:w-8 md:h-8 flex-shrink-0"></i>
+                        </button>
+                        <button onclick="nav('resultats')" class="p-4 md:p-8 bg-emerald-600 text-white rounded-2xl md:rounded-[2.5rem] shadow-xl font-black text-lg md:text-3xl flex items-center justify-between hover:scale-95 transition-transform italic">
+                            <span class="text-left leading-tight">Class<span class="hidden md:inline">ement</span></span>
+                            <i data-lucide="trophy" class="w-6 h-6 md:w-8 md:h-8 flex-shrink-0"></i>
+                        </button>
                     </div>
-                    <h2 class="text-2xl font-black text-blue-900 mb-4 uppercase italic pl-2">Postes (10)</h2>
-                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-12">${renderGrid()}</div>
+                    <h2 class="text-lg md:text-2xl font-black text-blue-900 mb-3 md:mb-4 uppercase italic pl-2">Postes (10)</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 md:gap-4 mb-8 md:mb-12">${renderGrid()}</div>
                 `;
             } 
             else if(state.currentPage === 'inscription') renderInscription(root);
@@ -174,9 +194,10 @@
             return Array.from({length: 10}, (_, i) => i + 1).map(n => {
                 const f = state.fishermen.find(x => x.poste == n);
                 return `
-                <button onclick="${f ? `window.openP(${n})` : ''}" class="p-6 rounded-3xl border-2 transition-all flex flex-col items-center ${f ? 'bg-blue-900 border-blue-900 text-white shadow-xl' : 'bg-white border-white text-blue-800 opacity-80'}">
-                    <span class="text-[10px] font-black uppercase opacity-50">Poste</span><span class="text-4xl font-black mb-1 italic">${n}</span>
-                    <span class="text-[10px] font-bold uppercase truncate w-full text-center leading-tight">
+                <button onclick="${f ? `window.openP(${n})` : ''}" class="p-3 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all flex flex-col items-center ${f ? 'bg-blue-900 border-blue-900 text-white shadow-xl' : 'bg-white border-white text-blue-800 opacity-80'}">
+                    <span class="text-[8px] md:text-[10px] font-black uppercase opacity-50">Poste</span>
+                    <span class="text-2xl md:text-4xl font-black mb-1 italic">${n}</span>
+                    <span class="text-[8px] md:text-[10px] font-bold uppercase truncate w-full text-center leading-tight">
                         ${f ? `${f.nom1}<br>${f.nom2}` : 'LIBRE'}
                     </span>
                 </button>`;
@@ -195,38 +216,86 @@
             const poidsGlobal = state.fishermen.reduce((acc, f) => acc + calc.totalWeight(f), 0);
 
             container.innerHTML = `
-                <button onclick="nav('index')" class="mb-8 flex items-center text-blue-600 font-bold underline italic"><i data-lucide="arrow-left" class="mr-2"></i> Retour Accueil</button>
+                <button onclick="nav('index')" class="mb-4 md:mb-8 flex items-center text-blue-600 font-bold underline italic text-sm">
+                    <i data-lucide="arrow-left" class="mr-2 w-4 h-4"></i> Retour
+                </button>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div class="bg-blue-900 p-6 rounded-[2rem] text-white shadow-xl border-b-4 border-blue-400">
-                        <p class="text-[10px] font-black uppercase mb-1 opacity-60 italic">Grosse Miroir/Commune</p>
-                        <p class="text-3xl font-black mb-2">${bigCommon.w.toFixed(3)} kg</p>
-                        <p class="text-[10px] font-bold uppercase truncate">${bigCommon.equipe} (P${bigCommon.poste})</p>
+                <!-- Prix spéciaux - Version mobile optimisée -->
+                <div class="grid grid-cols-1 gap-3 md:gap-6 mb-4 md:mb-6">
+                    <div class="bg-blue-900 p-4 md:p-6 rounded-2xl md:rounded-[2rem] text-white shadow-xl border-b-4 border-blue-400">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[9px] md:text-[10px] font-black uppercase mb-1 opacity-60 italic">Grosse Miroir/Commune</p>
+                                <p class="text-[10px] md:text-[10px] font-bold uppercase truncate opacity-80">${bigCommon.equipe}</p>
+                            </div>
+                            <div class="text-right flex-shrink-0 ml-2">
+                                <p class="text-2xl md:text-3xl font-black">${bigCommon.w.toFixed(3)} kg</p>
+                                <p class="text-xs font-bold opacity-60">P${bigCommon.poste}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-emerald-600 p-6 rounded-[2rem] text-white shadow-xl border-b-4 border-emerald-400">
-                        <p class="text-[10px] font-black uppercase mb-1 opacity-60 italic">Poisson Prestige (${prestige.type})</p>
-                        <p class="text-3xl font-black mb-2">${prestige.w.toFixed(3)} kg</p>
-                        <p class="text-[10px] font-bold uppercase truncate">${prestige.equipe} (P${prestige.poste})</p>
+                    <div class="bg-emerald-600 p-4 md:p-6 rounded-2xl md:rounded-[2rem] text-white shadow-xl border-b-4 border-emerald-400">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[9px] md:text-[10px] font-black uppercase mb-1 opacity-60 italic">Prestige (${prestige.type})</p>
+                                <p class="text-[10px] md:text-[10px] font-bold uppercase truncate opacity-80">${prestige.equipe}</p>
+                            </div>
+                            <div class="text-right flex-shrink-0 ml-2">
+                                <p class="text-2xl md:text-3xl font-black">${prestige.w.toFixed(3)} kg</p>
+                                <p class="text-xs font-bold opacity-60">P${prestige.poste}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-orange-500 p-6 rounded-[2rem] text-white shadow-xl border-b-4 border-orange-300">
-                        <p class="text-[10px] font-black uppercase mb-1 opacity-60 italic">Petit poisson (Max 10kg/Hors Koï)</p>
-                        <p class="text-3xl font-black mb-2">${smallFish.w > 0 ? smallFish.w.toFixed(3) : '---'} ${smallFish.w > 0 ? 'kg' : ''}</p>
-                        <p class="text-[10px] font-bold uppercase truncate">${smallFish.equipe} (P${smallFish.poste})</p>
+                    <div class="bg-orange-500 p-4 md:p-6 rounded-2xl md:rounded-[2rem] text-white shadow-xl border-b-4 border-orange-300">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[9px] md:text-[10px] font-black uppercase mb-1 opacity-60 italic">Petit poisson (Max 10kg)</p>
+                                <p class="text-[10px] md:text-[10px] font-bold uppercase truncate opacity-80">${smallFish.equipe}</p>
+                            </div>
+                            <div class="text-right flex-shrink-0 ml-2">
+                                <p class="text-2xl md:text-3xl font-black">${smallFish.w > 0 ? smallFish.w.toFixed(3) : '---'} ${smallFish.w > 0 ? 'kg' : ''}</p>
+                                <p class="text-xs font-bold opacity-60">P${smallFish.poste}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-[2rem] border-2 border-slate-100 flex items-center justify-between shadow-sm">
-                        <span class="text-[10px] font-black uppercase text-slate-400 italic">Total poissons sortis</span>
-                        <span class="text-4xl font-black text-blue-900">${totalPoissonsGlobal}</span>
+                <!-- Stats globales -->
+                <div class="grid grid-cols-2 gap-3 md:gap-6 mb-4 md:mb-8">
+                    <div class="bg-white p-4 md:p-6 rounded-2xl md:rounded-[2rem] border-2 border-slate-100 shadow-sm text-center md:text-left">
+                        <span class="text-[9px] md:text-[10px] font-black uppercase text-slate-400 italic block mb-1">Total poissons</span>
+                        <span class="text-2xl md:text-4xl font-black text-blue-900">${totalPoissonsGlobal}</span>
                     </div>
-                    <div class="bg-white p-6 rounded-[2rem] border-2 border-slate-100 flex items-center justify-between shadow-sm">
-                        <span class="text-[10px] font-black uppercase text-slate-400 italic">Poids total cumulé</span>
-                        <span class="text-4xl font-black text-emerald-600">${poidsGlobal.toFixed(3)} <span class="text-lg">kg</span></span>
+                    <div class="bg-white p-4 md:p-6 rounded-2xl md:rounded-[2rem] border-2 border-slate-100 shadow-sm text-center md:text-left">
+                        <span class="text-[9px] md:text-[10px] font-black uppercase text-slate-400 italic block mb-1">Poids total</span>
+                        <span class="text-xl md:text-4xl font-black text-emerald-600">${poidsGlobal.toFixed(3)} <span class="text-sm md:text-lg">kg</span></span>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-[2.5rem] shadow-xl border overflow-hidden">
+                <!-- Classement - Version cartes pour mobile -->
+                <div class="cards-responsive space-y-3">
+                    ${sorted.map((f, i) => `
+                    <div class="bg-white p-4 rounded-2xl border shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-10 flex items-center justify-center rounded-xl font-black text-lg flex-shrink-0 ${i===0?'bg-yellow-400 text-white shadow-lg':i===1?'bg-slate-300 text-white':i===2?'bg-orange-400 text-white':'bg-slate-100 text-slate-400'}">${i+1}</span>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-lg font-black text-xs">P${f.poste}</span>
+                                    <span class="text-xs text-slate-400 font-bold">${calc.fishCount(f)} poisson${calc.fishCount(f)>1?'s':''}</span>
+                                </div>
+                                <p class="font-black text-blue-900 uppercase text-xs italic truncate">${f.nom1} ${f.prenom1}</p>
+                                <p class="font-bold text-slate-500 uppercase text-xs italic truncate">${f.nom2} ${f.prenom2}</p>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <span class="text-xl font-black text-blue-900">${calc.totalWeight(f).toFixed(3)}</span>
+                                <span class="text-xs font-bold text-slate-400 block">kg</span>
+                            </div>
+                        </div>
+                    </div>`).join('')}
+                </div>
+
+                <!-- Classement - Version tableau pour desktop -->
+                <div class="table-responsive bg-white rounded-[2.5rem] shadow-xl border overflow-hidden">
                     <table class="w-full text-left">
                         <thead class="bg-blue-900 text-white text-[10px] uppercase font-black tracking-widest">
                             <tr>
@@ -258,32 +327,58 @@
             const f = state.fishermen.find(f => f.poste == state.currentPoste);
             if(!f) return nav('index');
             container.innerHTML = `
-                <button onclick="nav('index')" class="mb-8 flex items-center text-blue-600 font-bold underline italic"><i data-lucide="arrow-left" class="mr-2"></i> Retour</button>
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border-l-8 border-blue-600 mb-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h1 class="text-3xl font-black text-blue-900 uppercase italic">Poste ${state.currentPoste}</h1>
-                            <div class="mt-4 space-y-1">
-                                <p class="text-sm font-black text-slate-600 uppercase italic">${f.nom1} ${f.prenom1}</p>
-                                <p class="text-sm font-black text-slate-400 uppercase italic border-t pt-1">${f.nom2} ${f.prenom2}</p>
+                <button onclick="nav('index')" class="mb-4 md:mb-8 flex items-center text-blue-600 font-bold underline italic text-sm">
+                    <i data-lucide="arrow-left" class="mr-2 w-4 h-4"></i> Retour
+                </button>
+                
+                <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-xl border-l-4 md:border-l-8 border-blue-600 mb-4 md:mb-6">
+                    <div class="flex justify-between items-start gap-3">
+                        <div class="min-w-0 flex-1">
+                            <h1 class="text-xl md:text-3xl font-black text-blue-900 uppercase italic">Poste ${state.currentPoste}</h1>
+                            <div class="mt-2 md:mt-4 space-y-1">
+                                <p class="text-xs md:text-sm font-black text-slate-600 uppercase italic truncate">${f.nom1} ${f.prenom1}</p>
+                                <p class="text-xs md:text-sm font-black text-slate-400 uppercase italic border-t pt-1 truncate">${f.nom2} ${f.prenom2}</p>
                             </div>
                         </div>
-                        <div class="bg-blue-50 p-6 rounded-[2rem] text-right border border-blue-100 shadow-inner">
-                            <span class="text-4xl font-black text-blue-800">${calc.totalWeight(f).toFixed(3)}<span class="text-lg ml-1">kg</span></span>
+                        <div class="bg-blue-50 p-3 md:p-6 rounded-xl md:rounded-[2rem] text-right border border-blue-100 shadow-inner flex-shrink-0">
+                            <span class="text-xl md:text-4xl font-black text-blue-800">${calc.totalWeight(f).toFixed(3)}<span class="text-sm md:text-lg ml-1">kg</span></span>
                         </div>
                     </div>
                 </div>
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <select id="p_type" class="p-4 border-2 border-slate-100 rounded-2xl font-bold bg-slate-50 uppercase outline-none focus:border-blue-600">
-                        <option value="Miroir">Miroir</option>
-                        <option value="Commune">Commune</option>
-                        <option value="Amour Blanc">Amour Blanc</option>
-                        <option value="Koï">Koï</option>
-                    </select>
-                    <input id="p_wei" type="number" step="0.001" placeholder="Poids (kg)" class="p-4 border-2 border-slate-100 rounded-2xl font-bold bg-slate-50 outline-none focus:border-blue-600">
-                    <button onclick="addW()" class="bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase italic tracking-widest">Enregistrer Pesée</button>
+                
+                <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-sm border mb-4 md:mb-8">
+                    <div class="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
+                        <select id="p_type" class="p-3 md:p-4 border-2 border-slate-100 rounded-xl md:rounded-2xl font-bold bg-slate-50 uppercase outline-none focus:border-blue-600 text-sm">
+                            <option value="Miroir">Miroir</option>
+                            <option value="Commune">Commune</option>
+                            <option value="Amour Blanc">Amour Blanc</option>
+                            <option value="Koï">Koï</option>
+                        </select>
+                        <input id="p_wei" type="number" step="0.001" placeholder="Poids (kg)" class="p-3 md:p-4 border-2 border-slate-100 rounded-xl md:rounded-2xl font-bold bg-slate-50 outline-none focus:border-blue-600 text-sm">
+                        <button onclick="addW()" class="bg-blue-600 text-white font-black py-3 md:py-4 rounded-xl md:rounded-2xl shadow-lg uppercase italic tracking-wider text-sm">Enregistrer</button>
+                    </div>
                 </div>
-                <div class="bg-white rounded-[2.5rem] shadow-sm border overflow-hidden">
+                
+                <!-- Liste des pesées - Version mobile -->
+                <div class="space-y-2 md:hidden">
+                    ${(f.weights || []).slice().reverse().map((w, idx) => `
+                    <div class="bg-white p-4 rounded-2xl border shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-blue-900 text-sm italic uppercase">${w.type}</p>
+                                <p class="text-[10px] text-slate-400 font-bold italic">${w.time}</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-black text-blue-900 text-lg italic">${w.weight.toFixed(3)} kg</span>
+                                <button onclick="editW(${f.weights.length-1-idx})" class="p-2 text-blue-300 hover:text-blue-600"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                                <button onclick="delW(${f.weights.length-1-idx})" class="p-2 text-red-200 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                    </div>`).join('')}
+                </div>
+                
+                <!-- Liste des pesées - Version desktop -->
+                <div class="hidden md:block bg-white rounded-[2.5rem] shadow-sm border overflow-hidden">
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest">
                             <tr><th class="p-6">Date & Heure</th><th class="p-6">Variété</th><th class="p-6 text-right">Poids</th><th class="p-6"></th></tr>
@@ -340,53 +435,61 @@
             const assigned = state.fishermen.filter(f => f.poste).sort((a,b) => a.poste - b.poste);
 
             container.innerHTML = `
-                <button onclick="nav('index')" class="mb-8 flex items-center text-blue-600 font-bold underline italic"><i data-lucide="arrow-left" class="mr-2"></i> Retour Accueil</button>
+                <button onclick="nav('index')" class="mb-4 md:mb-8 flex items-center text-blue-600 font-bold underline italic text-sm">
+                    <i data-lucide="arrow-left" class="mr-2 w-4 h-4"></i> Retour
+                </button>
                 
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border mb-10 max-w-4xl mx-auto">
-                    <h2 class="text-2xl font-black text-blue-900 uppercase mb-6 italic text-center">Inscrire un Binôme</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                        <div class="space-y-4 p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                            <h3 class="font-black text-blue-600 uppercase text-xs tracking-widest italic">Pêcheur n°1</h3>
-                            <input id="in_nom1" placeholder="NOM" class="w-full p-4 border-2 border-white rounded-2xl font-bold uppercase shadow-sm outline-none focus:border-blue-600">
-                            <input id="in_prenom1" placeholder="PRÉNOM" class="w-full p-4 border-2 border-white rounded-2xl font-bold shadow-sm outline-none focus:border-blue-600">
+                <div class="bg-white p-4 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-xl border mb-6 md:mb-10 max-w-4xl mx-auto">
+                    <h2 class="text-lg md:text-2xl font-black text-blue-900 uppercase mb-4 md:mb-6 italic text-center">Inscrire un Binôme</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-4 md:mb-8">
+                        <div class="space-y-3 md:space-y-4 p-4 md:p-6 bg-slate-50 rounded-2xl md:rounded-3xl border border-slate-100">
+                            <h3 class="font-black text-blue-600 uppercase text-[10px] md:text-xs tracking-widest italic">Pêcheur n°1</h3>
+                            <input id="in_nom1" placeholder="NOM" class="w-full p-3 md:p-4 border-2 border-white rounded-xl md:rounded-2xl font-bold uppercase shadow-sm outline-none focus:border-blue-600 text-sm">
+                            <input id="in_prenom1" placeholder="PRÉNOM" class="w-full p-3 md:p-4 border-2 border-white rounded-xl md:rounded-2xl font-bold shadow-sm outline-none focus:border-blue-600 text-sm">
                         </div>
-                        <div class="space-y-4 p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                            <h3 class="font-black text-blue-600 uppercase text-xs tracking-widest italic">Pêcheur n°2</h3>
-                            <input id="in_nom2" placeholder="NOM" class="w-full p-4 border-2 border-white rounded-2xl font-bold uppercase shadow-sm outline-none focus:border-blue-600">
-                            <input id="in_prenom2" placeholder="PRÉNOM" class="w-full p-4 border-2 border-white rounded-2xl font-bold shadow-sm outline-none focus:border-blue-600">
+                        <div class="space-y-3 md:space-y-4 p-4 md:p-6 bg-slate-50 rounded-2xl md:rounded-3xl border border-slate-100">
+                            <h3 class="font-black text-blue-600 uppercase text-[10px] md:text-xs tracking-widest italic">Pêcheur n°2</h3>
+                            <input id="in_nom2" placeholder="NOM" class="w-full p-3 md:p-4 border-2 border-white rounded-xl md:rounded-2xl font-bold uppercase shadow-sm outline-none focus:border-blue-600 text-sm">
+                            <input id="in_prenom2" placeholder="PRÉNOM" class="w-full p-3 md:p-4 border-2 border-white rounded-xl md:rounded-2xl font-bold shadow-sm outline-none focus:border-blue-600 text-sm">
                         </div>
                     </div>
-                    <button onclick="addF()" class="w-full bg-blue-900 text-white font-black py-5 rounded-2xl shadow-xl uppercase italic tracking-widest hover:bg-blue-800 transition-colors">Ajouter à la liste d'attente</button>
+                    <button onclick="addF()" class="w-full bg-blue-900 text-white font-black py-4 md:py-5 rounded-xl md:rounded-2xl shadow-xl uppercase italic tracking-wider md:tracking-widest hover:bg-blue-800 transition-colors text-sm md:text-base">Ajouter à la liste</button>
                 </div>
 
-                <div class="max-w-4xl mx-auto space-y-12">
+                <div class="max-w-4xl mx-auto space-y-8 md:space-y-12">
                     <div>
-                        <h3 class="text-xl font-black text-orange-500 uppercase italic mb-4 flex items-center"><i data-lucide="clock" class="mr-2"></i> En attente de tirage (${waiting.length})</h3>
-                        <div class="grid grid-cols-1 gap-4">
+                        <h3 class="text-base md:text-xl font-black text-orange-500 uppercase italic mb-3 md:mb-4 flex items-center">
+                            <i data-lucide="clock" class="mr-2 w-4 h-4 md:w-5 md:h-5"></i> En attente (${waiting.length})
+                        </h3>
+                        <div class="grid grid-cols-1 gap-3 md:gap-4">
                             ${waiting.length ? waiting.map((f) => {
                                 const originalIndex = state.fishermen.indexOf(f);
                                 return `
-                                <div class="bg-white p-6 rounded-3xl border flex justify-between items-center shadow-sm">
-                                    <div class="font-black text-blue-900 uppercase italic">${f.nom1} / ${f.nom2}</div>
-                                    <div class="flex gap-2">
-                                        <button onclick="openAssignModal(${originalIndex})" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-black uppercase text-xs italic shadow-md">Assigner Poste</button>
-                                        <button onclick="delF(${originalIndex})" class="p-3 text-red-200 hover:text-red-600"><i data-lucide="trash-2"></i></button>
+                                <div class="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border shadow-sm">
+                                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                                        <div class="font-black text-blue-900 uppercase italic text-sm md:text-base">${f.nom1} / ${f.nom2}</div>
+                                        <div class="flex gap-2">
+                                            <button onclick="openAssignModal(${originalIndex})" class="flex-1 sm:flex-none bg-blue-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-black uppercase text-[10px] md:text-xs italic shadow-md">Assigner</button>
+                                            <button onclick="delF(${originalIndex})" class="p-2 md:p-3 text-red-200 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4 md:w-5 md:h-5"></i></button>
+                                        </div>
                                     </div>
                                 </div>`;
-                            }).join('') : '<p class="text-slate-400 italic font-bold">Aucune équipe en attente</p>'}
+                            }).join('') : '<p class="text-slate-400 italic font-bold text-sm">Aucune équipe en attente</p>'}
                         </div>
                     </div>
 
                     <div>
-                        <h3 class="text-xl font-black text-emerald-600 uppercase italic mb-4 flex items-center"><i data-lucide="check-circle" class="mr-2"></i> Postes Assignés (${assigned.length})</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <h3 class="text-base md:text-xl font-black text-emerald-600 uppercase italic mb-3 md:mb-4 flex items-center">
+                            <i data-lucide="check-circle" class="mr-2 w-4 h-4 md:w-5 md:h-5"></i> Assignés (${assigned.length})
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                             ${assigned.map(f => `
-                                <div class="bg-white p-4 rounded-2xl border flex justify-between items-center shadow-sm">
-                                    <div class="flex items-center">
-                                        <span class="bg-blue-900 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black mr-4">${f.poste}</span>
-                                        <span class="text-sm uppercase text-blue-900 font-black italic">${f.nom1} / ${f.nom2}</span>
+                                <div class="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl border flex justify-between items-center shadow-sm">
+                                    <div class="flex items-center min-w-0">
+                                        <span class="bg-blue-900 text-white w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center font-black mr-3 md:mr-4 text-sm md:text-base flex-shrink-0">${f.poste}</span>
+                                        <span class="text-xs md:text-sm uppercase text-blue-900 font-black italic truncate">${f.nom1} / ${f.nom2}</span>
                                     </div>
-                                    <button onclick="delF(${state.fishermen.indexOf(f)})" class="text-red-100 hover:text-red-500"><i data-lucide="trash-2"></i></button>
+                                    <button onclick="delF(${state.fishermen.indexOf(f)})" class="text-red-100 hover:text-red-500 flex-shrink-0 ml-2"><i data-lucide="trash-2" class="w-4 h-4 md:w-5 md:h-5"></i></button>
                                 </div>
                             `).join('')}
                         </div>
@@ -408,21 +511,21 @@
 
             modal.innerHTML = `
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
-                    <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl animate-in zoom-in duration-200">
-                        <h3 class="text-xl font-black text-blue-900 uppercase italic mb-2 text-center">Tirage au Sort</h3>
-                        <p class="text-xs text-slate-400 font-bold text-center uppercase mb-6">${f.nom1} / ${f.nom2}</p>
+                    <div class="bg-white w-full max-w-sm rounded-2xl md:rounded-[2.5rem] p-6 md:p-8 shadow-2xl">
+                        <h3 class="text-lg md:text-xl font-black text-blue-900 uppercase italic mb-2 text-center">Tirage au Sort</h3>
+                        <p class="text-[10px] md:text-xs text-slate-400 font-bold text-center uppercase mb-4 md:mb-6">${f.nom1} / ${f.nom2}</p>
                         
-                        <div class="mb-6">
+                        <div class="mb-4 md:mb-6">
                             <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Choisir le poste tiré</label>
-                            <select id="modal_poste_select" class="w-full p-4 border-2 border-slate-100 rounded-2xl font-black bg-slate-50 uppercase outline-none focus:border-blue-600 mt-1">
+                            <select id="modal_poste_select" class="w-full p-3 md:p-4 border-2 border-slate-100 rounded-xl md:rounded-2xl font-black bg-slate-50 uppercase outline-none focus:border-blue-600 mt-1 text-sm">
                                 <option value="">-- SÉLECTIONNER --</option>
                                 ${options}
                             </select>
                         </div>
                         
                         <div class="grid grid-cols-2 gap-3">
-                            <button onclick="closeModal()" class="py-4 bg-slate-100 text-slate-400 font-black rounded-2xl uppercase italic text-xs">Annuler</button>
-                            <button onclick="confirmAssign(${idx})" class="py-4 bg-blue-600 text-white font-black rounded-2xl uppercase italic text-xs shadow-lg">Confirmer</button>
+                            <button onclick="closeModal()" class="py-3 md:py-4 bg-slate-100 text-slate-400 font-black rounded-xl md:rounded-2xl uppercase italic text-xs">Annuler</button>
+                            <button onclick="confirmAssign(${idx})" class="py-3 md:py-4 bg-blue-600 text-white font-black rounded-xl md:rounded-2xl uppercase italic text-xs shadow-lg">Confirmer</button>
                         </div>
                     </div>
                 </div>`;
@@ -452,491 +555,22 @@
 
         function renderSettings(container) {
             container.innerHTML = `
-                <button onclick="nav('index')" class="mb-8 flex items-center text-blue-600 font-bold underline italic"><i data-lucide="arrow-left" class="mr-2"></i> Retour</button>
-                <div class="bg-white p-10 rounded-[2.5rem] shadow-xl border max-w-lg mx-auto">
-                    <h2 class="text-2xl font-black text-blue-900 mb-8 uppercase italic">Paramètres</h2>
-                    <div class="space-y-6">
-                        <div><label class="text-[10px] font-black uppercase text-slate-400 ml-2">Titre</label><input id="set_title" value="${state.contestInfo.title}" class="w-full p-4 border rounded-2xl font-bold bg-slate-50 outline-none"></div>
-                        <div><label class="text-[10px] font-black uppercase text-slate-400 ml-2">Date / Info</label><input id="set_date" value="${state.contestInfo.date}" class="w-full p-4 border rounded-2xl font-bold bg-slate-50 outline-none"></div>
-                        <button onclick="updateSet()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-xl uppercase italic">Enregistrer</button>
-                        <button onclick="resetAll()" class="w-full bg-red-50 text-red-600 font-bold py-4 rounded-2xl mt-4 italic">Réinitialiser l'Enduro (⚠️)</button>
-                    </div>
-                </div>`;
-        }
-
-        window.updateSet = () => {
-            state.contestInfo.title = document.getElementById('set_title').value;
-            state.contestInfo.date = document.getElementById('set_date').value;
-            save(); nav('index');
-        };
-
-        window.resetAll = () => { if(confirm("Vider toutes les données ?")) { state.fishermen = []; save(); nav('index'); } };
-
-        render();
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enduro - Gestion Équipes</title>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
-        .modal-bg { background-color: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); }
-    </style>
-</head>
-<body>
-
-    <div id="app" class="max-w-6xl mx-auto p-4 md:p-8"></div>
-    <div id="modal-container"></div>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCoBk9Is6dasO-1edTV6atWWA1VaBGnPiM",
-            authDomain: "enduro-da8ba.firebaseapp.com",
-            projectId: "enduro-da8ba",
-            storageBucket: "enduro-da8ba.firebasestorage.app",
-            messagingSenderId: "330025530878",
-            appId: "1:330025530878:web:60422bb7ee468df6dcfcaf",
-            measurementId: "G-GK1WNYKK5L"
-        };
-        
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        let state = {
-            isLoggedIn: sessionStorage.getItem('auth_peche') === 'true',
-            isAdmin: false,
-            currentPage: 'index',
-            currentPoste: null,
-            fishermen: [],
-            contestInfo: { title: 'ENDURO', date: '2025' }
-        };
-
-        db.collection("data").doc("enduro-data").onSnapshot(doc => {
-            if(doc.exists) {
-                const d = doc.data();
-                state.fishermen = d.fishermen || [];
-                state.contestInfo = d.contestInfo || state.contestInfo;
-                render();
-            }
-        });
-
-        const save = async () => {
-            await db.collection("data").doc("enduro-data").set({ 
-                fishermen: state.fishermen, 
-                contestInfo: state.contestInfo 
-            });
-        };
-
-        window.login = () => {
-            const mdp = document.getElementById('l_mdp').value;
-            if(mdp === "123") {
-                state.isLoggedIn = true; sessionStorage.setItem('auth_peche', 'true'); render();
-            } else { alert("Mot de passe incorrect"); }
-        };
-
-        window.logout = () => {
-            state.isLoggedIn = false; state.isAdmin = false;
-            sessionStorage.removeItem('auth_peche'); render();
-        };
-
-        window.checkAdmin = () => {
-            const p = prompt("Mot de passe admin :");
-            if(p === "admin") { state.isAdmin = true; nav('settings'); }
-            else { alert("Accès refusé"); }
-        };
-
-        const calc = {
-            totalWeight: (f) => (f.weights || []).reduce((s, w) => s + w.weight, 0),
-            fishCount: (f) => (f.weights || []).length,
-            
-            getBestFish: (types) => {
-                let best = { w: 0, equipe: '---', poste: '--', type: '' };
-                state.fishermen.filter(f => f.poste).forEach(f => {
-                    (f.weights || []).forEach(w => {
-                        if(types.includes(w.type) && w.weight > best.w) {
-                            best = { w: w.weight, equipe: `${f.nom1} ${f.prenom1} / ${f.nom2} ${f.prenom2}`, poste: f.poste, type: w.type };
-                        }
-                    });
-                });
-                return best;
-            },
-
-            getPrestigeFish: () => {
-                let bestKoi = { w: 0, equipe: '---', poste: '--', type: 'Koï' };
-                let bestAmour = { w: 0, equipe: '---', poste: '--', type: 'Amour Blanc' };
-                let koiFound = false;
-
-                state.fishermen.filter(f => f.poste).forEach(f => {
-                    (f.weights || []).forEach(w => {
-                        if(w.type === 'Koï' && w.weight > bestKoi.w) {
-                            bestKoi = { w: w.weight, equipe: `${f.nom1} ${f.prenom1} / ${f.nom2} ${f.prenom2}`, poste: f.poste, type: 'Koï' };
-                            koiFound = true;
-                        }
-                        if(w.type === 'Amour Blanc' && w.weight > bestAmour.w) {
-                            bestAmour = { w: w.weight, equipe: `${f.nom1} ${f.prenom1} / ${f.nom2} ${f.prenom2}`, poste: f.poste, type: 'Amour Blanc' };
-                        }
-                    });
-                });
-                return koiFound ? bestKoi : bestAmour;
-            },
-
-            getSmallestFish: () => {
-                let small = { w: 999, equipe: '---', poste: '--' };
-                let found = false;
-                state.fishermen.filter(f => f.poste).forEach(f => {
-                    (f.weights || []).forEach(w => {
-                        if(w.type !== 'Koï' && w.weight < 10 && w.weight < small.w) {
-                            small = { w: w.weight, equipe: `${f.nom1} ${f.prenom1} / ${f.nom2} ${f.prenom2}`, poste: f.poste };
-                            found = true;
-                        }
-                    });
-                });
-                return found ? small : {w:0, equipe:'---', poste:'--'};
-            }
-        };
-
-        window.nav = (p) => { state.currentPage = p; render(); };
-
-        function render() {
-            const root = document.getElementById('app');
-            if(!state.isLoggedIn) {
-                root.innerHTML = `<div class="min-h-[60vh] flex items-center justify-center"><div class="bg-white p-10 rounded-[2.5rem] shadow-xl w-full max-sm mx-4 border text-center">
-                <h2 class="text-2xl font-black mb-6 text-blue-900 uppercase italic">Connexion Enduro</h2>
-                <div class="mb-4 text-left">
-                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Identifiant</label>
-                    <input value="aappma" disabled class="w-full p-4 border rounded-2xl font-bold bg-slate-100 uppercase outline-none text-slate-400">
-                </div>
-                <div class="mb-6 text-left">
-                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Mot de passe</label>
-                    <input id="l_mdp" type="password" placeholder="Saisir le code" class="w-full p-4 border rounded-2xl font-bold bg-slate-50 outline-none focus:border-blue-600">
-                </div>
-                <button onclick="login()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase italic">Entrer</button></div></div>`;
-                return;
-            }
-
-            if(state.currentPage === 'index') {
-                root.innerHTML = `
-                    <div class="flex justify-between items-center mb-8">
-                        <button onclick="checkAdmin()" class="p-3 bg-white border rounded-full text-blue-600 shadow-sm hover:bg-blue-50 transition-colors"><i data-lucide="settings"></i></button>
-                        <button onclick="logout()" class="p-3 bg-red-50 border border-red-100 rounded-full text-red-600 shadow-sm hover:bg-red-100 transition-colors"><i data-lucide="log-out"></i></button>
-                    </div>
-                    <div class="text-center mb-12">
-                        <h1 class="text-6xl font-black text-blue-900 uppercase italic tracking-tighter">${state.contestInfo.title}</h1>
-                        <div class="inline-block px-8 py-3 bg-blue-600 text-white rounded-full font-bold uppercase text-xs mt-3 shadow-lg">${state.contestInfo.date}</div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-3xl mx-auto">
-                        <button onclick="nav('inscription')" class="p-8 bg-orange-500 text-white rounded-[2.5rem] shadow-xl font-black text-3xl flex items-center justify-between hover:scale-95 transition-transform italic">Inscriptions <i data-lucide="users"></i></button>
-                        <button onclick="nav('resultats')" class="p-8 bg-emerald-600 text-white rounded-[2.5rem] shadow-xl font-black text-3xl flex items-center justify-between hover:scale-95 transition-transform italic">Classement <i data-lucide="trophy"></i></button>
-                    </div>
-                    <h2 class="text-2xl font-black text-blue-900 mb-4 uppercase italic pl-2">Postes (10)</h2>
-                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-12">${renderGrid()}</div>
-                `;
-            } 
-            else if(state.currentPage === 'inscription') renderInscription(root);
-            else if(state.currentPage === 'resultats') renderResultats(root);
-            else if(state.currentPage === 'poste') renderPoste(root);
-            else if(state.currentPage === 'settings') renderSettings(root);
-            lucide.createIcons();
-        }
-
-        function renderGrid() {
-            return Array.from({length: 10}, (_, i) => i + 1).map(n => {
-                const f = state.fishermen.find(x => x.poste == n);
-                return `
-                <button onclick="${f ? `window.openP(${n})` : ''}" class="p-6 rounded-3xl border-2 transition-all flex flex-col items-center ${f ? 'bg-blue-900 border-blue-900 text-white shadow-xl' : 'bg-white border-white text-blue-800 opacity-80'}">
-                    <span class="text-[10px] font-black uppercase opacity-50">Poste</span><span class="text-4xl font-black mb-1 italic">${n}</span>
-                    <span class="text-[10px] font-bold uppercase truncate w-full text-center leading-tight">
-                        ${f ? `${f.nom1}<br>${f.nom2}` : 'LIBRE'}
-                    </span>
-                </button>`;
-            }).join('');
-        }
-
-        window.openP = (n) => { state.currentPoste = n; nav('poste'); };
-
-        function renderResultats(container) {
-            const sorted = [...state.fishermen].filter(f => f.poste).sort((a,b) => calc.totalWeight(b) - calc.totalWeight(a));
-            const bigCommon = calc.getBestFish(['Miroir', 'Commune']);
-            const prestige = calc.getPrestigeFish();
-            const smallFish = calc.getSmallestFish();
-            
-            const totalPoissonsGlobal = state.fishermen.reduce((acc, f) => acc + calc.fishCount(f), 0);
-            const poidsGlobal = state.fishermen.reduce((acc, f) => acc + calc.totalWeight(f), 0);
-
-            container.innerHTML = `
-                <button onclick="nav('index')" class="mb-8 flex items-center text-blue-600 font-bold underline italic"><i data-lucide="arrow-left" class="mr-2"></i> Retour Accueil</button>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div class="bg-blue-900 p-6 rounded-[2rem] text-white shadow-xl border-b-4 border-blue-400">
-                        <p class="text-[10px] font-black uppercase mb-1 opacity-60 italic">Grosse Miroir/Commune</p>
-                        <p class="text-3xl font-black mb-2">${bigCommon.w.toFixed(3)} kg</p>
-                        <p class="text-[10px] font-bold uppercase truncate">${bigCommon.equipe} (P${bigCommon.poste})</p>
-                    </div>
-                    <div class="bg-emerald-600 p-6 rounded-[2rem] text-white shadow-xl border-b-4 border-emerald-400">
-                        <p class="text-[10px] font-black uppercase mb-1 opacity-60 italic">Poisson Prestige (${prestige.type})</p>
-                        <p class="text-3xl font-black mb-2">${prestige.w.toFixed(3)} kg</p>
-                        <p class="text-[10px] font-bold uppercase truncate">${prestige.equipe} (P${prestige.poste})</p>
-                    </div>
-                    <div class="bg-orange-500 p-6 rounded-[2rem] text-white shadow-xl border-b-4 border-orange-300">
-                        <p class="text-[10px] font-black uppercase mb-1 opacity-60 italic">Petit poisson (Max 10kg/Hors Koï)</p>
-                        <p class="text-3xl font-black mb-2">${smallFish.w > 0 ? smallFish.w.toFixed(3) : '---'} ${smallFish.w > 0 ? 'kg' : ''}</p>
-                        <p class="text-[10px] font-bold uppercase truncate">${smallFish.equipe} (P${smallFish.poste})</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-[2rem] border-2 border-slate-100 flex items-center justify-between shadow-sm">
-                        <span class="text-[10px] font-black uppercase text-slate-400 italic">Total poissons sortis</span>
-                        <span class="text-4xl font-black text-blue-900">${totalPoissonsGlobal}</span>
-                    </div>
-                    <div class="bg-white p-6 rounded-[2rem] border-2 border-slate-100 flex items-center justify-between shadow-sm">
-                        <span class="text-[10px] font-black uppercase text-slate-400 italic">Poids total cumulé</span>
-                        <span class="text-4xl font-black text-emerald-600">${poidsGlobal.toFixed(3)} <span class="text-lg">kg</span></span>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-[2.5rem] shadow-xl border overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-blue-900 text-white text-[10px] uppercase font-black tracking-widest">
-                            <tr>
-                                <th class="p-6">Rang</th>
-                                <th class="p-6">Poste</th>
-                                <th class="p-6">Identité Complète Équipe</th>
-                                <th class="p-6">Poissons</th>
-                                <th class="p-6 text-right">Poids Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${sorted.map((f, i) => `
-                            <tr class="border-b border-slate-50 last:border-0 hover:bg-blue-50/50">
-                                <td class="p-6"><span class="w-10 h-10 flex items-center justify-center rounded-xl font-black ${i===0?'bg-yellow-400 text-white shadow-lg':i===1?'bg-slate-300 text-white':i===2?'bg-orange-400 text-white':'bg-slate-100 text-slate-400'}">${i+1}</span></td>
-                                <td class="p-6 font-black text-blue-600 text-xl italic">${f.poste}</td>
-                                <td class="p-6">
-                                    <div class="font-black text-blue-900 uppercase text-sm leading-tight italic">${f.nom1} ${f.prenom1}</div>
-                                    <div class="font-black text-blue-900 uppercase text-sm leading-tight italic mt-1 border-t pt-1 border-slate-100">${f.nom2} ${f.prenom2}</div>
-                                </td>
-                                <td class="p-6 font-bold text-slate-500">${calc.fishCount(f)}</td>
-                                <td class="p-6 text-right font-black text-2xl text-blue-900 tracking-tighter">${calc.totalWeight(f).toFixed(3)} kg</td>
-                            </tr>`).join('')}
-                        </tbody>
-                    </table>
-                </div>`;
-        }
-
-        function renderPoste(container) {
-            const f = state.fishermen.find(f => f.poste == state.currentPoste);
-            if(!f) return nav('index');
-            container.innerHTML = `
-                <button onclick="nav('index')" class="mb-8 flex items-center text-blue-600 font-bold underline italic"><i data-lucide="arrow-left" class="mr-2"></i> Retour</button>
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border-l-8 border-blue-600 mb-6">
-                    <div class="flex justify-between items-start">
+                <button onclick="nav('index')" class="mb-4 md:mb-8 flex items-center text-blue-600 font-bold underline italic text-sm">
+                    <i data-lucide="arrow-left" class="mr-2 w-4 h-4"></i> Retour
+                </button>
+                <div class="bg-white p-6 md:p-10 rounded-2xl md:rounded-[2.5rem] shadow-xl border max-w-lg mx-auto">
+                    <h2 class="text-xl md:text-2xl font-black text-blue-900 mb-6 md:mb-8 uppercase italic">Paramètres</h2>
+                    <div class="space-y-4 md:space-y-6">
                         <div>
-                            <h1 class="text-3xl font-black text-blue-900 uppercase italic">Poste ${state.currentPoste}</h1>
-                            <div class="mt-4 space-y-1">
-                                <p class="text-sm font-black text-slate-600 uppercase italic">${f.nom1} ${f.prenom1}</p>
-                                <p class="text-sm font-black text-slate-400 uppercase italic border-t pt-1">${f.nom2} ${f.prenom2}</p>
-                            </div>
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Titre</label>
+                            <input id="set_title" value="${state.contestInfo.title}" class="w-full p-3 md:p-4 border rounded-xl md:rounded-2xl font-bold bg-slate-50 outline-none text-sm">
                         </div>
-                        <div class="bg-blue-50 p-6 rounded-[2rem] text-right border border-blue-100 shadow-inner">
-                            <span class="text-4xl font-black text-blue-800">${calc.totalWeight(f).toFixed(3)}<span class="text-lg ml-1">kg</span></span>
+                        <div>
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Date / Info</label>
+                            <input id="set_date" value="${state.contestInfo.date}" class="w-full p-3 md:p-4 border rounded-xl md:rounded-2xl font-bold bg-slate-50 outline-none text-sm">
                         </div>
-                    </div>
-                </div>
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border mb-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <select id="p_type" class="p-4 border-2 border-slate-100 rounded-2xl font-bold bg-slate-50 uppercase outline-none focus:border-blue-600">
-                        <option value="Miroir">Miroir</option>
-                        <option value="Commune">Commune</option>
-                        <option value="Amour Blanc">Amour Blanc</option>
-                        <option value="Koï">Koï</option>
-                    </select>
-                    <input id="p_wei" type="number" step="0.001" placeholder="Poids (kg)" class="p-4 border-2 border-slate-100 rounded-2xl font-bold bg-slate-50 outline-none focus:border-blue-600">
-                    <button onclick="addW()" class="bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase italic tracking-widest">Enregistrer Pesée</button>
-                </div>
-                <div class="bg-white rounded-[2.5rem] shadow-sm border overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest">
-                            <tr><th class="p-6">Date & Heure</th><th class="p-6">Variété</th><th class="p-6 text-right">Poids</th><th class="p-6"></th></tr>
-                        </thead>
-                        <tbody>
-                        ${(f.weights || []).slice().reverse().map((w, idx) => `
-                            <tr class="border-t border-slate-50 hover:bg-slate-50/50">
-                                <td class="p-6 font-bold text-slate-400 text-xs italic">${w.time}</td>
-                                <td class="p-6 font-bold text-blue-900 text-sm italic uppercase">${w.type}</td>
-                                <td class="p-6 text-right font-black text-blue-900 text-xl italic">${w.weight.toFixed(3)} kg</td>
-                                <td class="p-6 flex justify-center gap-2">
-                                    <button onclick="editW(${f.weights.length-1-idx})" class="p-2 text-blue-200 hover:text-blue-600"><i data-lucide="edit-3"></i></button>
-                                    <button onclick="delW(${f.weights.length-1-idx})" class="p-2 text-red-100 hover:text-red-500"><i data-lucide="trash-2"></i></button>
-                                </td>
-                            </tr>`).join('')}
-                        </tbody>
-                    </table>
-                </div>`;
-        }
-
-        window.addW = () => {
-            const f = state.fishermen.find(f => f.poste == state.currentPoste);
-            const w = parseFloat(document.getElementById('p_wei').value);
-            const type = document.getElementById('p_type').value;
-            if(!w) return;
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'});
-            f.weights.push({ time: dateStr, weight: w, type: type });
-            save();
-            document.getElementById('p_wei').value = '';
-        };
-
-        window.editW = (idx) => {
-            const p = prompt("Admin requis :");
-            if(p !== "admin") return alert("Accès refusé");
-            const f = state.fishermen.find(f => f.poste == state.currentPoste);
-            const w = f.weights[idx];
-            document.getElementById('p_type').value = w.type;
-            document.getElementById('p_wei').value = w.weight;
-            f.weights.splice(idx, 1);
-            alert("Données remontées.");
-        };
-
-        window.delW = (idx) => {
-            const p = prompt("Admin requis :");
-            if(p !== "admin") return alert("Accès refusé");
-            const f = state.fishermen.find(f => f.poste == state.currentPoste);
-            f.weights.splice(idx, 1);
-            save();
-        };
-
-        function renderInscription(container) {
-            const waiting = state.fishermen.filter(f => !f.poste);
-            const assigned = state.fishermen.filter(f => f.poste).sort((a,b) => a.poste - b.poste);
-
-            container.innerHTML = `
-                <button onclick="nav('index')" class="mb-8 flex items-center text-blue-600 font-bold underline italic"><i data-lucide="arrow-left" class="mr-2"></i> Retour Accueil</button>
-                
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border mb-10 max-w-4xl mx-auto">
-                    <h2 class="text-2xl font-black text-blue-900 uppercase mb-6 italic text-center">Inscrire un Binôme</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                        <div class="space-y-4 p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                            <h3 class="font-black text-blue-600 uppercase text-xs tracking-widest italic">Pêcheur n°1</h3>
-                            <input id="in_nom1" placeholder="NOM" class="w-full p-4 border-2 border-white rounded-2xl font-bold uppercase shadow-sm outline-none focus:border-blue-600">
-                            <input id="in_prenom1" placeholder="PRÉNOM" class="w-full p-4 border-2 border-white rounded-2xl font-bold shadow-sm outline-none focus:border-blue-600">
-                        </div>
-                        <div class="space-y-4 p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                            <h3 class="font-black text-blue-600 uppercase text-xs tracking-widest italic">Pêcheur n°2</h3>
-                            <input id="in_nom2" placeholder="NOM" class="w-full p-4 border-2 border-white rounded-2xl font-bold uppercase shadow-sm outline-none focus:border-blue-600">
-                            <input id="in_prenom2" placeholder="PRÉNOM" class="w-full p-4 border-2 border-white rounded-2xl font-bold shadow-sm outline-none focus:border-blue-600">
-                        </div>
-                    </div>
-                    <button onclick="addF()" class="w-full bg-blue-900 text-white font-black py-5 rounded-2xl shadow-xl uppercase italic tracking-widest hover:bg-blue-800 transition-colors">Ajouter à la liste d'attente</button>
-                </div>
-
-                <div class="max-w-4xl mx-auto space-y-12">
-                    <div>
-                        <h3 class="text-xl font-black text-orange-500 uppercase italic mb-4 flex items-center"><i data-lucide="clock" class="mr-2"></i> En attente de tirage (${waiting.length})</h3>
-                        <div class="grid grid-cols-1 gap-4">
-                            ${waiting.length ? waiting.map((f) => {
-                                const originalIndex = state.fishermen.indexOf(f);
-                                return `
-                                <div class="bg-white p-6 rounded-3xl border flex justify-between items-center shadow-sm">
-                                    <div class="font-black text-blue-900 uppercase italic">${f.nom1} / ${f.nom2}</div>
-                                    <div class="flex gap-2">
-                                        <button onclick="openAssignModal(${originalIndex})" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-black uppercase text-xs italic shadow-md">Assigner Poste</button>
-                                        <button onclick="delF(${originalIndex})" class="p-3 text-red-200 hover:text-red-600"><i data-lucide="trash-2"></i></button>
-                                    </div>
-                                </div>`;
-                            }).join('') : '<p class="text-slate-400 italic font-bold">Aucune équipe en attente</p>'}
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 class="text-xl font-black text-emerald-600 uppercase italic mb-4 flex items-center"><i data-lucide="check-circle" class="mr-2"></i> Postes Assignés (${assigned.length})</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            ${assigned.map(f => `
-                                <div class="bg-white p-4 rounded-2xl border flex justify-between items-center shadow-sm">
-                                    <div class="flex items-center">
-                                        <span class="bg-blue-900 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black mr-4">${f.poste}</span>
-                                        <span class="text-sm uppercase text-blue-900 font-black italic">${f.nom1} / ${f.nom2}</span>
-                                    </div>
-                                    <button onclick="delF(${state.fishermen.indexOf(f)})" class="text-red-100 hover:text-red-500"><i data-lucide="trash-2"></i></button>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                </div>`;
-        }
-
-        window.openAssignModal = (idx) => {
-            const f = state.fishermen[idx];
-            const modal = document.getElementById('modal-container');
-            
-            let options = '';
-            for(let i=1; i<=10; i++) {
-                const isTaken = state.fishermen.find(team => team.poste == i);
-                options += `<option value="${i}" ${isTaken ? 'disabled' : ''} class="${isTaken ? 'text-slate-300' : 'text-blue-900 font-bold'}">
-                    Poste ${i} ${isTaken ? '(OCCUPÉ)' : ''}
-                </option>`;
-            }
-
-            modal.innerHTML = `
-                <div class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
-                    <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl animate-in zoom-in duration-200">
-                        <h3 class="text-xl font-black text-blue-900 uppercase italic mb-2 text-center">Tirage au Sort</h3>
-                        <p class="text-xs text-slate-400 font-bold text-center uppercase mb-6">${f.nom1} / ${f.nom2}</p>
-                        
-                        <div class="mb-6">
-                            <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Choisir le poste tiré</label>
-                            <select id="modal_poste_select" class="w-full p-4 border-2 border-slate-100 rounded-2xl font-black bg-slate-50 uppercase outline-none focus:border-blue-600 mt-1">
-                                <option value="">-- SÉLECTIONNER --</option>
-                                ${options}
-                            </select>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-3">
-                            <button onclick="closeModal()" class="py-4 bg-slate-100 text-slate-400 font-black rounded-2xl uppercase italic text-xs">Annuler</button>
-                            <button onclick="confirmAssign(${idx})" class="py-4 bg-blue-600 text-white font-black rounded-2xl uppercase italic text-xs shadow-lg">Confirmer</button>
-                        </div>
-                    </div>
-                </div>`;
-        };
-
-        window.closeModal = () => document.getElementById('modal-container').innerHTML = '';
-
-        window.confirmAssign = (idx) => {
-            const val = document.getElementById('modal_poste_select').value;
-            if(!val) return alert("Veuillez choisir un poste");
-            state.fishermen[idx].poste = parseInt(val);
-            save();
-            closeModal();
-        };
-
-        window.addF = () => {
-            const n1 = document.getElementById('in_nom1').value.toUpperCase();
-            const p1 = document.getElementById('in_prenom1').value;
-            const n2 = document.getElementById('in_nom2').value.toUpperCase();
-            const p2 = document.getElementById('in_prenom2').value;
-            if(!n1 || !n2) return alert("Veuillez remplir les noms.");
-            state.fishermen.push({ nom1: n1, prenom1: p1, nom2: n2, prenom2: p2, poste: null, weights: [] });
-            save();
-        };
-
-        window.delF = (idx) => { if(confirm("Supprimer cette équipe ?")) { state.fishermen.splice(idx, 1); save(); } };
-
-        function renderSettings(container) {
-            container.innerHTML = `
-                <button onclick="nav('index')" class="mb-8 flex items-center text-blue-600 font-bold underline italic"><i data-lucide="arrow-left" class="mr-2"></i> Retour</button>
-                <div class="bg-white p-10 rounded-[2.5rem] shadow-xl border max-w-lg mx-auto">
-                    <h2 class="text-2xl font-black text-blue-900 mb-8 uppercase italic">Paramètres</h2>
-                    <div class="space-y-6">
-                        <div><label class="text-[10px] font-black uppercase text-slate-400 ml-2">Titre</label><input id="set_title" value="${state.contestInfo.title}" class="w-full p-4 border rounded-2xl font-bold bg-slate-50 outline-none"></div>
-                        <div><label class="text-[10px] font-black uppercase text-slate-400 ml-2">Date / Info</label><input id="set_date" value="${state.contestInfo.date}" class="w-full p-4 border rounded-2xl font-bold bg-slate-50 outline-none"></div>
-                        <button onclick="updateSet()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-xl uppercase italic">Enregistrer</button>
-                        <button onclick="resetAll()" class="w-full bg-red-50 text-red-600 font-bold py-4 rounded-2xl mt-4 italic">Réinitialiser l'Enduro (⚠️)</button>
+                        <button onclick="updateSet()" class="w-full bg-blue-600 text-white font-black py-3 md:py-4 rounded-xl md:rounded-2xl shadow-xl uppercase italic text-sm">Enregistrer</button>
+                        <button onclick="resetAll()" class="w-full bg-red-50 text-red-600 font-bold py-3 md:py-4 rounded-xl md:rounded-2xl mt-4 italic text-sm">Réinitialiser l'Enduro (⚠️)</button>
                     </div>
                 </div>`;
         }
