@@ -49,9 +49,11 @@
             currentPage: 'index',
             currentPoste: null,
             fishermen: [],
-            contestInfo: { title: 'ENDURO', date: '2025' }
+            contestInfo: { title: 'ENDURO', date: '2025' },
+            lastPublished: null
         };
 
+        // Écoute des données principales
         db.collection("data").doc("enduro-data").onSnapshot(doc => {
             if(doc.exists) {
                 const d = doc.data();
@@ -61,11 +63,46 @@
             }
         });
 
+        // Écoute de la dernière publication
+        db.collection("data").doc("public-results").onSnapshot(doc => {
+            if(doc.exists) {
+                const d = doc.data();
+                state.lastPublished = d.publishedAt || null;
+                render();
+            }
+        });
+
         const save = async () => {
             await db.collection("data").doc("enduro-data").set({ 
                 fishermen: state.fishermen, 
                 contestInfo: state.contestInfo 
             });
+        };
+
+        // NOUVELLE FONCTION : Publier les résultats
+        window.publishResults = async () => {
+            if(!confirm("Publier les résultats actuels vers la page publique ?")) return;
+            
+            const now = new Date();
+            const publishData = {
+                fishermen: state.fishermen,
+                contestInfo: state.contestInfo,
+                publishedAt: now.toLocaleString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                })
+            };
+            
+            try {
+                await db.collection("data").doc("public-results").set(publishData);
+                alert("✅ Résultats publiés avec succès !\n\nLes pêcheurs peuvent maintenant voir le classement à jour.");
+            } catch(e) {
+                alert("❌ Erreur lors de la publication : " + e.message);
+            }
         };
 
         window.login = () => {
@@ -169,6 +206,22 @@
                         <h1 class="text-4xl md:text-6xl font-black text-blue-900 uppercase italic tracking-tighter">${state.contestInfo.title}</h1>
                         <div class="inline-block px-5 md:px-8 py-2 md:py-3 bg-blue-600 text-white rounded-full font-bold uppercase text-[10px] md:text-xs mt-3 shadow-lg">${state.contestInfo.date}</div>
                     </div>
+                    
+                    <!-- BOUTON PUBLIER LES RÉSULTATS -->
+                    <div class="mb-6 md:mb-8 max-w-3xl mx-auto">
+                        <button onclick="publishResults()" class="w-full p-4 md:p-5 bg-gradient-to-r from-purple-600 to-purple-500 text-white rounded-2xl md:rounded-[2rem] shadow-xl font-black hover:scale-[0.98] transition-transform italic flex items-center justify-center gap-3">
+                            <i data-lucide="upload-cloud" class="w-6 h-6 md:w-7 md:h-7"></i>
+                            <span class="text-sm md:text-xl">Publier les Résultats</span>
+                        </button>
+                        ${state.lastPublished ? `
+                        <p class="text-center text-xs text-slate-400 mt-2 italic">
+                            Dernière publication : ${state.lastPublished}
+                        </p>` : `
+                        <p class="text-center text-xs text-orange-500 mt-2 italic font-bold">
+                            ⚠️ Aucune publication effectuée
+                        </p>`}
+                    </div>
+                    
                     <div class="grid grid-cols-2 gap-3 md:gap-6 mb-8 md:mb-12 max-w-3xl mx-auto">
                         <button onclick="nav('inscription')" class="p-4 md:p-8 bg-orange-500 text-white rounded-2xl md:rounded-[2.5rem] shadow-xl font-black hover:scale-95 transition-transform italic flex flex-col md:flex-row items-center justify-center md:justify-between gap-2">
                             <i data-lucide="users" class="w-8 h-8 md:w-8 md:h-8 flex-shrink-0"></i>
@@ -587,4 +640,3 @@
     </script>
 </body>
 </html>
-
