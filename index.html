@@ -386,15 +386,17 @@
                     `}
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 md:gap-6 mb-8 max-w-3xl mx-auto">
+                <div class="grid grid-cols-${state.fishermen.some(f => f.weights && f.weights.length > 0) ? '1' : '2'} gap-3 md:gap-6 mb-8 max-w-3xl mx-auto">
                     <button onclick="nav('resultats')" class="p-4 md:p-8 bg-emerald-600 text-white rounded-2xl md:rounded-[2.5rem] shadow-xl font-black hover:scale-95 transition-transform italic flex flex-col md:flex-row items-center justify-center md:justify-between gap-2">
                         <i data-lucide="trophy" class="w-8 h-8 flex-shrink-0"></i>
                         <span class="text-sm md:text-3xl text-center">Classement</span>
                     </button>
+                    ${!state.fishermen.some(f => f.weights && f.weights.length > 0) ? `
                     <button onclick="backToTirage()" class="p-4 md:p-8 bg-slate-400 text-white rounded-2xl md:rounded-[2.5rem] shadow-xl font-black hover:scale-95 transition-transform italic flex flex-col md:flex-row items-center justify-center md:justify-between gap-2">
                         <i data-lucide="arrow-left" class="w-8 h-8 flex-shrink-0"></i>
                         <span class="text-sm md:text-xl text-center">Retour Tirage</span>
                     </button>
+                    ` : ''}
                 </div>
 
                 <h2 class="text-lg md:text-2xl font-black text-blue-900 mb-3 md:mb-4 uppercase italic pl-2">Postes (10)</h2>
