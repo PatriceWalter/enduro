@@ -714,6 +714,13 @@
 
             const totalPoints = currentThrows.reduce((sum, t) => sum + t.value, 0);
             const throwsCount = currentThrows.length;
+            const currentTireur = throwsCount < 3 ? 1 : 2;
+            const tireur1Pts = currentThrows.slice(0, 3).reduce((s, t) => s + t.value, 0);
+            const tireur2Pts = currentThrows.slice(3, 6).reduce((s, t) => s + t.value, 0);
+            const tireur1Done = throwsCount >= 3;
+            const tireur2Done = throwsCount >= 6;
+            const tireurName = currentTireur === 1 ? `${team.nom1} ${team.prenom1}` : `${team.nom2} ${team.prenom2}`;
+            const tireurThrows = currentTireur === 1 ? Math.min(throwsCount, 3) : Math.max(0, throwsCount - 3);
             
             container.innerHTML = `
                 <button onclick="nav('index')" class="mb-4 md:mb-6 flex items-center text-blue-600 font-bold underline italic text-sm">
@@ -724,7 +731,7 @@
                     <h2 class="text-xl md:text-2xl font-black text-blue-600 uppercase italic">🎯 Lancer de Fléchettes</h2>
                 </div>
 
-                <div class="flex items-center justify-center gap-4 mb-4">
+                <div class="flex items-center justify-center gap-4 mb-3">
                     <button onclick="prevTeamFlechettes()" class="p-2 bg-slate-100 rounded-full ${currentTeamIndex === 0 ? 'opacity-30' : 'hover:bg-slate-200'}">
                         <i data-lucide="chevron-left" class="w-6 h-6"></i>
                     </button>
@@ -737,39 +744,67 @@
                     </button>
                 </div>
 
-                <div class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-4 rounded-2xl mb-4 max-w-sm mx-auto">
+                <!-- Indicateur tireur actif -->
+                <div class="flex justify-center gap-2 mb-4 max-w-sm mx-auto">
+                    <div class="flex-1 p-2 rounded-xl text-center transition-all ${currentTireur === 1 && !tireur2Done ? 'bg-blue-600 text-white ring-2 ring-blue-300 shadow-lg' : tireur1Done ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}">
+                        <p class="text-[9px] font-black uppercase">Tireur 1</p>
+                        <p class="text-xs font-bold truncate">${team.nom1} ${team.prenom1}</p>
+                        <p class="text-sm font-black">${tireur1Done ? '✅ ' + tireur1Pts + ' pts' : tireurThrows + '/3'}</p>
+                    </div>
+                    <div class="flex-1 p-2 rounded-xl text-center transition-all ${currentTireur === 2 ? 'bg-blue-600 text-white ring-2 ring-blue-300 shadow-lg' : tireur2Done ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}">
+                        <p class="text-[9px] font-black uppercase">Tireur 2</p>
+                        <p class="text-xs font-bold truncate">${team.nom2} ${team.prenom2}</p>
+                        <p class="text-sm font-black">${tireur2Done ? '✅ ' + tireur2Pts + ' pts' : (currentTireur === 2 ? tireurThrows + '/3' : '0/3')}</p>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-3 rounded-2xl mb-3 max-w-sm mx-auto">
                     <div class="flex justify-between items-center">
                         <div>
-                            <p class="text-xs opacity-70 uppercase font-bold">Fléchettes</p>
-                            <p class="text-2xl font-black">${throwsCount}/6</p>
+                            <p class="text-[10px] opacity-70 uppercase font-bold">Tireur ${currentTireur} — ${tireurThrows}/3</p>
+                            <p class="text-xs font-bold opacity-90">${tireurName}</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-xs opacity-70 uppercase font-bold">Score Total</p>
-                            <p class="text-3xl font-black">${totalPoints} pts</p>
+                            <p class="text-[10px] opacity-70 uppercase font-bold">Score Total</p>
+                            <p class="text-2xl font-black">${totalPoints} pts</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex flex-wrap justify-center gap-2 mb-4 max-w-sm mx-auto">
-                    ${currentThrows.map((t, i) => `
-                        <span class="bg-white border-2 border-blue-200 px-3 py-1 rounded-full text-sm font-bold text-blue-700">
+                <div class="flex flex-wrap justify-center gap-1 mb-3 max-w-sm mx-auto">
+                    ${currentThrows.slice(0, 3).map((t, i) => `
+                        <span class="bg-white border-2 border-blue-200 px-2 py-0.5 rounded-full text-xs font-bold text-blue-700">
                             ${i+1}. ${t.label}
                         </span>
                     `).join('')}
-                    ${throwsCount < 6 ? `<span class="bg-slate-100 px-3 py-1 rounded-full text-sm font-bold text-slate-400">En attente...</span>` : ''}
+                    ${throwsCount >= 3 ? '<span class="w-full text-center text-[9px] text-slate-300 font-bold">───── Tireur 2 ─────</span>' : ''}
+                    ${currentThrows.slice(3, 6).map((t, i) => `
+                        <span class="bg-white border-2 border-purple-200 px-2 py-0.5 rounded-full text-xs font-bold text-purple-700">
+                            ${i+4}. ${t.label}
+                        </span>
+                    `).join('')}
                 </div>
 
-                <div class="flex justify-center mb-4">
-                    <svg id="dartboard" viewBox="0 0 450 450" class="w-80 h-80 md:w-[450px] md:h-[450px] cursor-pointer">
+                <div class="flex justify-center mb-3" style="position:relative;">
+                    <svg id="dartboard" viewBox="0 0 450 450" class="w-80 h-80 md:w-[450px] md:h-[450px]" style="cursor:crosshair;">
                         ${generateDartboardSVG()}
                     </svg>
+                    <div id="magnifier" style="display:none; position:fixed; width:140px; height:140px; border-radius:50%; border:4px solid rgba(255,255,255,0.9); box-shadow:0 0 0 2px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.4); overflow:hidden; pointer-events:none; z-index:1000; background:#1a1a1a;">
+                        <svg id="mag-svg" viewBox="0 0 450 450" style="width:100%; height:100%;">
+                            ${generateDartboardSVG()}
+                        </svg>
+                        <div style="position:absolute; top:50%; left:50%; width:20px; height:20px; transform:translate(-50%,-50%); pointer-events:none;">
+                            <div style="position:absolute; top:50%; left:0; width:100%; height:2px; background:rgba(255,255,255,0.9); transform:translateY(-50%);"></div>
+                            <div style="position:absolute; top:0; left:50%; width:2px; height:100%; background:rgba(255,255,255,0.9); transform:translateX(-50%);"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex justify-center gap-3 mb-4">
-                    <button onclick="addThrow(0, 'Hors cible')" class="px-6 py-3 bg-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-300 transition-colors ${throwsCount >= 6 ? 'opacity-50' : ''}">
+                    <button onclick="addThrow(0, 'Hors cible')" class="px-5 py-2 bg-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-300 transition-colors text-sm ${throwsCount >= 6 ? 'opacity-50' : ''}">
                         ❌ Hors cible (0 pts)
                     </button>
-                    <button onclick="undoLastThrow()" class="px-6 py-3 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 transition-colors ${throwsCount === 0 ? 'opacity-50' : ''}">
+                    <button onclick="undoLastThrow()" class="px-5 py-2 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 transition-colors text-sm ${throwsCount === 0 ? 'opacity-50' : ''}">
                         ↩️ Annuler
                     </button>
                 </div>
@@ -788,7 +823,7 @@
                     `}
                 </div>
 
-                <div class="mt-8 max-w-md mx-auto">
+                <div class="mt-6 max-w-md mx-auto">
                     <h3 class="text-sm font-black text-slate-400 uppercase mb-3 text-center">Récapitulatif</h3>
                     <div class="space-y-2">
                         ${state.drawOrder.map((tid, idx) => {
@@ -867,7 +902,107 @@
         }
 
         function attachDartboardEvents() {
-            document.querySelectorAll('.dart-zone').forEach(zone => {
+            const svg = document.getElementById('dartboard');
+            const mag = document.getElementById('magnifier');
+            const magSvg = document.getElementById('mag-svg');
+            if(!svg || !mag || !magSvg) return;
+
+            const ZOOM = 3;
+            const MAG_SIZE = 140;
+            const VIEW_SIZE = 450 / ZOOM;
+
+            // === EFFET LOUPE - SOURIS ===
+            svg.addEventListener('mousemove', function(e) {
+                const rect = svg.getBoundingClientRect();
+                const relX = (e.clientX - rect.left) / rect.width;
+                const relY = (e.clientY - rect.top) / rect.height;
+
+                const svgX = relX * 450;
+                const svgY = relY * 450;
+
+                const vx = svgX - VIEW_SIZE / 2;
+                const vy = svgY - VIEW_SIZE / 2;
+                magSvg.setAttribute('viewBox', `${vx} ${vy} ${VIEW_SIZE} ${VIEW_SIZE}`);
+
+                mag.style.display = 'block';
+                mag.style.left = (e.clientX - MAG_SIZE / 2) + 'px';
+                mag.style.top = (e.clientY - MAG_SIZE - 25) + 'px';
+            });
+
+            svg.addEventListener('mouseleave', function() {
+                mag.style.display = 'none';
+            });
+
+            // === EFFET LOUPE - TACTILE (mobile) ===
+            svg.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                handleTouch(e);
+            }, { passive: false });
+
+            svg.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+                handleTouch(e);
+            }, { passive: false });
+
+            svg.addEventListener('touchend', function(e) {
+                mag.style.display = 'none';
+                // Déclencher le clic sur la zone sous le doigt
+                const touch = e.changedTouches[0];
+                const rect = svg.getBoundingClientRect();
+                const relX = (touch.clientX - rect.left) / rect.width;
+                const relY = (touch.clientY - rect.top) / rect.height;
+                const svgX = relX * 450;
+                const svgY = relY * 450;
+                
+                // Trouver la zone la plus proche
+                const hitZone = findDartZone(svgX, svgY);
+                if(hitZone) {
+                    addThrow(hitZone.value, hitZone.label);
+                }
+            });
+
+            function handleTouch(e) {
+                const touch = e.touches[0];
+                const rect = svg.getBoundingClientRect();
+                const relX = (touch.clientX - rect.left) / rect.width;
+                const relY = (touch.clientY - rect.top) / rect.height;
+
+                const svgX = relX * 450;
+                const svgY = relY * 450;
+
+                const vx = svgX - VIEW_SIZE / 2;
+                const vy = svgY - VIEW_SIZE / 2;
+                magSvg.setAttribute('viewBox', `${vx} ${vy} ${VIEW_SIZE} ${VIEW_SIZE}`);
+
+                mag.style.display = 'block';
+                mag.style.left = (touch.clientX - MAG_SIZE / 2) + 'px';
+                mag.style.top = (touch.clientY - MAG_SIZE - 50) + 'px';
+            }
+
+            // Trouver zone à partir des coordonnées SVG
+            function findDartZone(x, y) {
+                const cx = 225, cy = 225;
+                const dx = x - cx, dy = y - cy;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                let angle = Math.atan2(dy, dx) * 180 / Math.PI + 99;
+                if(angle < 0) angle += 360;
+                if(angle >= 360) angle -= 360;
+
+                if(dist <= 14) return { value: 50, label: 'Bull (50)' };
+                if(dist <= 32) return { value: 25, label: 'Outer Bull (25)' };
+                if(dist > 170) return null;
+
+                const sectorIndex = Math.floor(angle / 18);
+                const num = dartNumbers[sectorIndex % 20];
+
+                if(dist > 158) return { value: num * 2, label: `Double ${num}` };
+                if(dist > 105) return { value: num, label: `Simple ${num}` };
+                if(dist > 95) return { value: num * 3, label: `Triple ${num}` };
+                return { value: num, label: `Simple ${num}` };
+            }
+
+            // === CLIC SUR LES ZONES ===
+            svg.querySelectorAll('.dart-zone').forEach(zone => {
                 zone.addEventListener('click', function() {
                     const value = parseInt(this.dataset.value);
                     const label = this.dataset.label;
@@ -875,17 +1010,81 @@
                 });
                 zone.addEventListener('mouseenter', function() {
                     this.style.opacity = '0.7';
+                    this.style.filter = 'brightness(1.3)';
                 });
                 zone.addEventListener('mouseleave', function() {
                     this.style.opacity = '1';
+                    this.style.filter = '';
                 });
             });
         }
+
+        // ===== MODAL TIREUR SUIVANT =====
+        function showTireurModal(tireurNum, tireurName, tireurPts, nextTireurName) {
+            const modalContainer = document.getElementById('modal-container');
+            const isLastTireur = tireurNum === 2;
+            
+            modalContainer.innerHTML = `
+                <div class="modal-bg fixed inset-0 z-50 flex items-center justify-center p-4" id="tireur-modal">
+                    <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 max-w-sm w-full text-center transform scale-100 animate-bounce-in">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${isLastTireur ? 'bg-emerald-100' : 'bg-blue-100'}">
+                            <span class="text-3xl">${isLastTireur ? '🏆' : '🎯'}</span>
+                        </div>
+                        <h3 class="text-xl font-black uppercase italic ${isLastTireur ? 'text-emerald-600' : 'text-blue-600'} mb-2">
+                            ${isLastTireur ? 'Série terminée !' : 'Tireur 1 terminé !'}
+                        </h3>
+                        <p class="text-sm font-bold text-slate-500 mb-1">${tireurName}</p>
+                        <p class="text-3xl font-black text-blue-900 mb-4">${tireurPts} pts</p>
+                        
+                        ${!isLastTireur ? `
+                            <div class="bg-slate-50 rounded-2xl p-4 mb-5">
+                                <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Tireur suivant</p>
+                                <p class="text-base font-black text-blue-900 uppercase">${nextTireurName}</p>
+                            </div>
+                            <button onclick="closeTireurModal()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-black rounded-2xl shadow-xl uppercase italic hover:scale-[0.98] transition-transform">
+                                Tireur suivant →
+                            </button>
+                        ` : `
+                            <button onclick="closeTireurModal()" class="w-full py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-black rounded-2xl shadow-xl uppercase italic hover:scale-[0.98] transition-transform">
+                                OK
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.closeTireurModal = () => {
+            document.getElementById('modal-container').innerHTML = '';
+        };
 
         window.addThrow = (value, label) => {
             if(currentThrows.length >= 6) return;
             currentThrows.push({ value, label });
             saveCurrentThrows();
+            
+            const teamId = state.drawOrder[currentTeamIndex];
+            const team = state.teams.find(t => t.id === teamId);
+            
+            // Après 3 fléchettes : modal tireur suivant
+            if(currentThrows.length === 3 && team) {
+                const tireur1Pts = currentThrows.slice(0, 3).reduce((s, t) => s + t.value, 0);
+                const tireur1Name = `${team.nom1} ${team.prenom1}`;
+                const tireur2Name = `${team.nom2} ${team.prenom2}`;
+                render();
+                showTireurModal(1, tireur1Name, tireur1Pts, tireur2Name);
+                return;
+            }
+            
+            // Après 6 fléchettes : modal série terminée
+            if(currentThrows.length === 6 && team) {
+                const tireur2Pts = currentThrows.slice(3, 6).reduce((s, t) => s + t.value, 0);
+                const tireur2Name = `${team.nom2} ${team.prenom2}`;
+                render();
+                showTireurModal(2, tireur2Name, tireur2Pts, '');
+                return;
+            }
+            
             render();
         };
 
